@@ -36,6 +36,19 @@ function e($str) {
 function getBaseUrl() {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
     $domainName = $_SERVER['HTTP_HOST'];
-    $scriptName = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
-    return $protocol . $domainName . $scriptName;
+    
+    // Get the directory path of the project root (remove /admin if present)
+    $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+    if (basename($scriptDir) === 'admin') {
+        $scriptDir = dirname($scriptDir);
+    }
+    
+    // Ensure trailing slash
+    if ($scriptDir !== '/') {
+        $scriptDir .= '/';
+    } else {
+        $scriptDir = '/';
+    }
+    
+    return $protocol . $domainName . $scriptDir;
 }
