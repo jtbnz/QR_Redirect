@@ -135,6 +135,13 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             font-weight: 400;
         }
         
+        .qr-url-container {
+            display: flex;
+            margin-top: 0.5rem;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+        
         .qr-url {
             font-family: monospace;
             font-size: 0.9rem;
@@ -142,8 +149,36 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             word-break: break-all;
             background-color: #000;
             padding: 0.5rem;
-            margin-top: 0.5rem;
             border: 1px solid #222;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .copy-btn:hover {
+            background-color: #555;
+            border-color: #777;
+        }
+        
+        .copy-btn:active {
+            background-color: #666;
+        }
+        
+        .copy-btn.copied {
+            background-color: #1a3a1a;
+            border-color: #22c55e;
+            color: #4ade80;
         }
         
         .section {
@@ -299,7 +334,10 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
         <div class="qr-info">
             <h2>QR Code URL</h2>
             <p>Use this URL for your QR codes:</p>
-            <div class="qr-url"><?php echo e($qrUrl); ?></div>
+            <div class="qr-url-container">
+                <div class="qr-url" id="qr-url"><?php echo e($qrUrl); ?></div>
+                <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy</button>
+            </div>
         </div>
         
         <div class="section">
@@ -369,5 +407,70 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             <?php endif; ?>
         </div>
     </div>
+    
+    <script>
+        function copyToClipboard() {
+            const qrUrlElement = document.getElementById('qr-url');
+            const copyBtn = document.querySelector('.copy-btn');
+            const text = qrUrlElement.textContent;
+            
+            // Use the modern Clipboard API if available
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showCopySuccess(copyBtn);
+                }).catch(function(err) {
+                    // Fallback to older method
+                    fallbackCopyTextToClipboard(text, copyBtn);
+                });
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                fallbackCopyTextToClipboard(text, copyBtn);
+            }
+        }
+        
+        function fallbackCopyTextToClipboard(text, copyBtn) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess(copyBtn);
+                } else {
+                    showCopyError(copyBtn);
+                }
+            } catch (err) {
+                showCopyError(copyBtn);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        function showCopySuccess(copyBtn) {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('copied');
+            
+            setTimeout(function() {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }
+        
+        function showCopyError(copyBtn) {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Failed';
+            
+            setTimeout(function() {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
