@@ -181,6 +181,26 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             color: #4ade80;
         }
         
+        .test-btn {
+            padding: 0.5rem 1rem;
+            background-color: #222;
+            color: #fff;
+            border: 1px solid #444;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .test-btn:hover {
+            background-color: #444;
+            border-color: #666;
+        }
+        
+        .test-btn:active {
+            background-color: #555;
+        }
+        
         .section {
             margin-bottom: 3rem;
         }
@@ -337,6 +357,7 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             <div class="qr-url-container">
                 <div class="qr-url" id="qr-url"><?php echo e($qrUrl); ?></div>
                 <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy</button>
+                <button type="button" class="test-btn" onclick="testQRLink()">Test</button>
             </div>
         </div>
         
@@ -470,6 +491,14 @@ $qrUrl = getBaseUrl() . 'index.php?key=' . $config['qr_secret'];
             setTimeout(function() {
                 copyBtn.textContent = originalText;
             }, 2000);
+        }
+        
+        function testQRLink() {
+            const qrUrlElement = document.getElementById('qr-url');
+            const url = qrUrlElement.textContent;
+            
+            // Open the QR URL in a new tab/window
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
     </script>
 </body>
