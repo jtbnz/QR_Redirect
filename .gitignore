@@ -1,7 +1,8 @@
 # Config files with secrets
 config.php
 config.local.php
-config.*.php
+# Don't ignore the example config
+!config.example.php
 
 # Data directory
 data/
